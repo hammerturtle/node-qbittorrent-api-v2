@@ -873,6 +873,10 @@ exports.connect = async (host, username, password) => {
 			updatePlugins: async () => {
 				return await updatePlugins(options, cookie)
 			},
+
+			rawPerformRequest: async (path, parameters) => {
+				return await performRequest(options, cookie, path, parameters)
+			}
 		}
 	} catch (err) {
 		console.error(err)
