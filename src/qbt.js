@@ -13,7 +13,8 @@ exports.connect = async (host, username, password, headers = {}) => {
 	const options = {
 		hostname: hostname.hostname,
 		protocol: hostname.protocol,
-		port: parseInt(hostname.port) || (hostname.protocol == 'https:' ? 443 : 80)
+		port: parseInt(hostname.port) || (hostname.protocol == 'https:' ? 443 : 80),
+		headers,
 	}
 
 	try {
@@ -1291,7 +1292,7 @@ function performRequest(opt, cookie, path, parameters) {
 		path: ENDPOINT + path,
 		method: 'POST',
 		headers: {
-			...headers,
+			...opt.headers,
 			...{
 				'Referer': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
 				'Origin': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
