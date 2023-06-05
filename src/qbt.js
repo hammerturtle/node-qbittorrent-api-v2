@@ -1312,7 +1312,7 @@ function performRequest(opt, cookie, path, parameters) {
 					if (res.statusCode == 200) {
 						var c = null
 						if (res.headers['set-cookie'] != undefined) {
-							c = res.headers['set-cookie'][0]
+							c = res.headers['set-cookie'].filter(val => val.startsWith('SID='))[0]
 						}
 						resolve({ res: Buffer.concat(data).toString(), cookie: c })
 					} else {
