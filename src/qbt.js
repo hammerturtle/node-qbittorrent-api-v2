@@ -8,7 +8,7 @@ const ENDPOINT = '/api/v2'
  * @param {string} username - Username used to access the WebUI
  * @param {string} password - Password used to access the WebUI
  */
-exports.connect = async (host, username, password) => {
+exports.connect = async (host, username, password, headers = {}) => {
 	const hostname = new URL(host)
 	const options = {
 		hostname: hostname.hostname,
@@ -1291,11 +1291,14 @@ function performRequest(opt, cookie, path, parameters) {
 		path: ENDPOINT + path,
 		method: 'POST',
 		headers: {
-			'Referer': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
-			'Origin': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'Content-Length': data.length,
-			'Cookie': cookie
+			...headers,
+			...{
+				'Referer': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
+				'Origin': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Content-Length': data.length,
+				'Cookie': cookie
+			},
 		}
 	}
 
