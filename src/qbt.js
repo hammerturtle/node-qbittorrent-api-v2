@@ -8,12 +8,13 @@ const ENDPOINT = '/api/v2'
  * @param {string} username - Username used to access the WebUI
  * @param {string} password - Password used to access the WebUI
  */
-exports.connect = async (host, username, password) => {
+exports.connect = async (host, username, password, headers = {}) => {
 	const hostname = new URL(host)
 	const options = {
 		hostname: hostname.hostname,
 		protocol: hostname.protocol,
-		port: parseInt(hostname.port) || (hostname.protocol == 'https:' ? 443 : 80)
+		port: parseInt(hostname.port) || (hostname.protocol == 'https:' ? 443 : 80),
+		headers,
 	}
 
 	try {
@@ -1291,11 +1292,14 @@ function performRequest(opt, cookie, path, parameters) {
 		path: ENDPOINT + path,
 		method: 'POST',
 		headers: {
-			'Referer': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
-			'Origin': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'Content-Length': data.length,
-			'Cookie': cookie
+			...opt.headers,
+			...{
+				'Referer': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
+				'Origin': opt.protocol + '//' + opt.hostname + ((opt.port != 80 || opt.port != 443) ? ':' + opt.port : ''),
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Content-Length': data.length,
+				'Cookie': cookie
+			},
 		}
 	}
 
@@ -1308,7 +1312,7 @@ function performRequest(opt, cookie, path, parameters) {
 					if (res.statusCode == 200) {
 						var c = null
 						if (res.headers['set-cookie'] != undefined) {
-							c = res.headers['set-cookie'][0]
+							c = res.headers['set-cookie'].filter(val => val.startsWith('SID='))[0]
 						}
 						resolve({ res: Buffer.concat(data).toString(), cookie: c })
 					} else {
